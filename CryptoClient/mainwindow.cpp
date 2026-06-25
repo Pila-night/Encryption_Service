@@ -73,7 +73,7 @@ void MainWindow::on_pushButton_Connect_clicked()
 
     /*Берем ип адрес и порт*/
     QString ip = ui->lineEdit_Ip_addr->text().trimmed();
-    quint16 port = ui->lineEdit_Port->text().toUInt();
+    quint16 port = ui->lineEdit_Port->text().toUShort();
     /*эмитем в контроллер*/
     emit connectRequested(ip, port);
 }

@@ -5,9 +5,7 @@
 #include <openssl/ec.h>
 #include <openssl/bn.h>
 
-// ============================================================================
-// КОНСТАНТЫ ГОСТ (из GOST_constants.h)
-// ============================================================================
+
 
 const std::string Gost3410::q_hex = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFD97";
 const std::string Gost3410::p_hex = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFD97";

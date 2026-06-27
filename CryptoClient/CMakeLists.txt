@@ -25,6 +25,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         Network.h Network.cpp
         Controller.h Controller.cpp
+        Gost3410.h Gost3410.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET CryptoClient APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

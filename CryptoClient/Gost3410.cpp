@@ -75,9 +75,7 @@ Gost3410::~Gost3410()
 {
 }
 
-// ============================================================================
-// 1. ГЕНЕРАЦИЯ ПРИВАТНОГО КЛЮЧА (из CA_and_Server.h)
-// ============================================================================
+
 
 QString Gost3410::generatePrivateKey()
 {
@@ -118,9 +116,7 @@ QString Gost3410::generatePrivateKey()
     return QString::fromStdString(private_key);
 }
 
-// ============================================================================
-// 2. ГЕНЕРАЦИЯ ПУБЛИЧНОГО КЛЮЧА (из CA_and_Server.h)
-// ============================================================================
+
 
 QString Gost3410::generatePublicKey(const QString &privateKeyHex)
 {
@@ -168,9 +164,6 @@ QString Gost3410::generatePublicKey(const QString &privateKeyHex)
     return QString::fromStdString(public_key);
 }
 
-// ============================================================================
-// 3. ХЭШИРОВАНИЕ (из CA_and_Client.h)
-// ============================================================================
 
 QString Gost3410::computeHash(const QString &data)
 {
@@ -223,10 +216,6 @@ QString Gost3410::computeHash(const QString &data)
 
     return QString::fromStdString(result);
 }
-
-// ============================================================================
-// 4. СОЗДАНИЕ ПОДПИСИ (из Only_CA.h)
-// ============================================================================
 
 QString Gost3410::createSignature(const QString &hashHex, const QString &privateKeyHex)
 {
@@ -301,9 +290,6 @@ QString Gost3410::createSignature(const QString &hashHex, const QString &private
     return QString::fromStdString(signature);
 }
 
-// ============================================================================
-// 5. ПРОВЕРКА ПОДПИСИ (из CA_and_Client.h)
-// ============================================================================
 
 bool Gost3410::verifySignature(const QString &hashHex,
                                const QString &signatureHex,
@@ -397,9 +383,7 @@ bool Gost3410::verifySignature(const QString &hashHex,
     return result == 1;
 }
 
-// ============================================================================
-// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ХЭШИРОВАНИЯ (из CA_and_Client.h)
-// ============================================================================
+
 
 std::vector<unsigned char> Gost3410::g_N(const std::vector<unsigned char> &h,
                                          const std::vector<unsigned char> &m,
@@ -505,3 +489,4 @@ std::string Gost3410::to_hex(unsigned char byte)
     s += hex_chars[byte & 0x0F];
     return s;
 }
+

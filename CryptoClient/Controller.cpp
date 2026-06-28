@@ -6,14 +6,15 @@
 #include <QDebug>
 
 const QString Controller::SERVER_PUBLIC_KEY_HEX =
-    "0000000000000000000000000000000000000000000000000000000000000001"
-    "8D91E471E0989CDA27DF505A51F3B0F064F3E6A5E892E9E2E3D8D08F1A94D8A2";
+    "3AE19C089FBFDF4EC733A13274AABAD4EF0331777E762D0798AC2F21BF5E1B32"
+    "E62B4D12EB5CADD4F3224B2C0D71F477ECF462B676DCBB421C45CEA3B12F549E";
 
 Controller::Controller(MainWindow *view, QObject *parent)
     : QObject(parent)
     , m_view(view)
     , m_network(new Network(this))
     , m_packetHandler(new PacketHandler(this))
+    , m_gost(new Gost3410(this))
     , m_state(HandshakeState::Idle)
 {
     connect(m_view, &MainWindow::connectRequested, this, &Controller::onConnectedRequested);
@@ -42,11 +43,11 @@ Controller::~Controller() {}
 
 void Controller::initializeKeys()
 {
-    m_clientPrivateKey = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-    m_clientPublicKey = "FEDCBA9876543210FEDCBA9876543210FEDCBA9876543210FEDCBA9876543210"
-                        "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
+    m_clientPrivateKey = m_gost->generatePrivateKey();
+    m_clientPublicKey = m_gost->generatePublicKey(m_clientPrivateKey);
 
-    qDebug() << "[Controller] Keys initialized";
+    qDebug() << "[Controller] Private key:" << m_clientPrivateKey;
+    qDebug() << "[Controller] Public key:" << m_clientPublicKey;
 }
 
 void Controller::resetHandshake()
@@ -255,9 +256,13 @@ void Controller::sendNonce()
 
 void Controller::sendSignature(const QByteArray &nonceToSign)
 {
-    QByteArray signatureBytes(64, 0xAB);
-    signatureBytes[0] = 0x01;
-    signatureBytes[63] = 0xFF;
+    QString nonceHex = QString::fromUtf8(nonceToSign.toHex());
+
+    QString hash = m_gost->computeHash(nonceHex);
+
+    QString signatureHex = m_gost->createSignature(hash, m_clientPrivateKey);
+
+    QByteArray signatureBytes = QByteArray::fromHex(signatureHex.toUtf8());
 
     Protocol::SignaturePacket packet;
     packet.signature = Protocol::Adapter::toVector(signatureBytes);
@@ -297,6 +302,13 @@ void Controller::sendDisconnect()
 
 bool Controller::verifyServerSignature(const QByteArray &signature)
 {
-    Q_UNUSED(signature);
-    return true;
+    QString nonceHex = QString::fromUtf8(m_clientNonce.toHex());
+    QString hash = m_gost->computeHash(nonceHex);
+
+    QString signatureHex = QString::fromUtf8(signature.toHex());
+
+    bool valid = m_gost->verifySignature(hash, signatureHex, SERVER_PUBLIC_KEY_HEX);
+
+    qDebug() << "[Controller] Signature verification:" << (valid ? "VALID" : "INVALID");
+    return valid;
 }

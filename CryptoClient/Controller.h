@@ -39,7 +39,7 @@ private:
     MainWindow *m_view;
     Network *m_network;
     PacketHandler *m_packetHandler;
-    //Gost3410 *m_gost;
+    Gost3410 *m_gost;
 
     enum class HandshakeState {
         Idle,                    // Не подключен
@@ -53,7 +53,6 @@ private:
 
     HandshakeState m_state;
 
-    // === Данные для Handshake ===
     QString m_clientPrivateKey;   // Приватный ключ клиента (hex, 64 символа)
     QString m_clientPublicKey;    // Публичный ключ клиента (hex, 128 символов)
     QByteArray m_serverPublicKey; // Публичный ключ сервера (raw bytes, 64 байта)

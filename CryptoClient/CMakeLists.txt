@@ -12,6 +12,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
 
+# ============================================================================
+# === GMP И LIBGCRYPT (добавлено) ===
+# ============================================================================
+# Путь к MSYS2 MinGW64 (где установлены GMP и libgcrypt)
+set(MSYS2_MINGW64 "C:/msys64/mingw64")
+
+# Проверка существования путей
+if(NOT EXISTS "${MSYS2_MINGW64}/include/gmp.h")
+    message(WARNING "GMP не найден в ${MSYS2_MINGW64}. Установите: pacman -S mingw-w64-x86_64-gmp")
+endif()
+if(NOT EXISTS "${MSYS2_MINGW64}/include/gcrypt.h")
+    message(WARNING "libgcrypt не найден в ${MSYS2_MINGW64}. Установите: pacman -S mingw-w64-x86_64-libgcrypt")
+endif()
+# ============================================================================
+
 set(PROJECT_SOURCES
     main.cpp
     mainwindow.cpp
@@ -34,6 +49,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ProtocolPackets.h
         ProtocolSerializer.h ProtocolSerializer.cpp
         PacketHandler.h PacketHandler.cpp
+        ALL.h
     )
 else()
     if(ANDROID)
@@ -51,6 +67,39 @@ target_link_libraries(CryptoClient PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Network
 )
+
+# ============================================================================
+# === GMP И LIBGCRYPT (добавлено) ===
+# ============================================================================
+# Подключаем заголовки
+target_include_directories(CryptoClient PRIVATE
+    "${MSYS2_MINGW64}/include"
+)
+
+# Подключаем библиотеки
+target_link_libraries(CryptoClient PRIVATE
+    "${MSYS2_MINGW64}/lib/libgmp.dll.a"
+    "${MSYS2_MINGW64}/lib/libgcrypt.dll.a"
+    "${MSYS2_MINGW64}/lib/libgpg-error.dll.a"
+)
+
+# Для Windows добавляем Winsock (если ещё не добавлен)
+if(WIN32)
+    target_link_libraries(CryptoClient PRIVATE ws2_32)
+endif()
+
+# Автоматическое копирование DLL в папку сборки
+if(WIN32)
+    add_custom_command(TARGET CryptoClient POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${MSYS2_MINGW64}/bin/libgmp-10.dll"
+            "${MSYS2_MINGW64}/bin/libgcrypt-20.dll"
+            "${MSYS2_MINGW64}/bin/libgpg-error-0.dll"
+            $<TARGET_FILE_DIR:CryptoClient>
+        COMMENT "Copying GMP and libgcrypt DLLs to build directory"
+    )
+endif()
+# ============================================================================
 
 target_compile_options(CryptoClient PRIVATE -Wno-deprecated-declarations)
 

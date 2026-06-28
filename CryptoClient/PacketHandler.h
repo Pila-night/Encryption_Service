@@ -15,8 +15,9 @@ public:
     explicit PacketHandler(QObject *parent = nullptr);
     ~PacketHandler();
 
-    // Принимает сырые байты от Network
-    void handleData(const QByteArray &data);
+    void feedData(const QByteArray &data);
+
+    void reset();
 
 signals:
     void publicKeyReceived(const QByteArray &key);
@@ -28,12 +29,20 @@ signals:
     void errorOccurred(const QString &errorMessage);
 
 private:
-    void handlePublicKeyPacket(const std::vector<uint8_t> &data);
-    void handleNoncePacket(const std::vector<uint8_t> &data);
-    void handleSignaturePacket(const std::vector<uint8_t> &data);
-    void handleCiphertextPacket(const std::vector<uint8_t> &data);
-    void handlePlaintextPacket(const std::vector<uint8_t> &data);
-    void handleDisconnectPacket(const std::vector<uint8_t> &data);
+    QByteArray m_buffer;
+
+
+    bool tryProcessOnePacket();
+
+
+    int expectedPacketSize(const QByteArray &data);
+
+    void handlePublicKeyPacket(const QByteArray &packetData);
+    void handleNoncePacket(const QByteArray &packetData);
+    void handleSignaturePacket(const QByteArray &packetData);
+    void handleCiphertextPacket(const QByteArray &packetData);
+    void handlePlaintextPacket(const QByteArray &packetData);
+    void handleDisconnectPacket(const QByteArray &packetData);
 };
 
 #endif // PACKETHANDLER_H

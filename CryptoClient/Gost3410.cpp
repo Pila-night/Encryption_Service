@@ -1,3 +1,4 @@
+/*
 #include "Gost3410.h"
 
 #include <random>
@@ -487,4 +488,4 @@ std::string Gost3410::to_hex(unsigned char byte)
     s += hex_chars[byte & 0x0F];
     return s;
 }
-
+*/

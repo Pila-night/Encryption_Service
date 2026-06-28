@@ -12,22 +12,28 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
 
-find_package(OpenSSL REQUIRED)
-
 set(PROJECT_SOURCES
     main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    Network.h Network.cpp
-    Controller.h Controller.cpp
-    Gost3410.h Gost3410.cpp
+    Network.h
+    Network.cpp
+    Controller.h
+    Controller.cpp
+    Gost3410.h
+    Gost3410.cpp
+    ProtocolAdapter.h
+    ProtocolAdapter.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(CryptoClient
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        ProtocolPackets.h
+        ProtocolSerializer.h ProtocolSerializer.cpp
+        PacketHandler.h PacketHandler.cpp
     )
 else()
     if(ANDROID)
@@ -44,8 +50,6 @@ endif()
 target_link_libraries(CryptoClient PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Network
-    OpenSSL::SSL
-    OpenSSL::Crypto
 )
 
 target_compile_options(CryptoClient PRIVATE -Wno-deprecated-declarations)

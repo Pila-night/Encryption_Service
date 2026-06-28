@@ -1,4 +1,4 @@
-
+/*
 #ifndef GOST3410_H
 #define GOST3410_H
 
@@ -50,3 +50,4 @@ private:
 };
 
 #endif // GOST3410_H
+*/

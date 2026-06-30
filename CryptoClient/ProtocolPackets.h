@@ -2,6 +2,8 @@
 #pragma once
 #include <cstdint>
 #include <vector>
+#include <cstddef>
+
 
 namespace Protocol
 {

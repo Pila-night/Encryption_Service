@@ -1,6 +1,6 @@
 // ALL.h
 #pragma once
-//#include <unistd.h>
+#include <unistd.h>
 #include <gmp.h>
 #include <gcrypt.h>
 
